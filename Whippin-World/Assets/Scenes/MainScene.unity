@@ -438,11 +438,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3282299d4267a7842928111d8cb32808, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 976991066}
   controller: {fileID: 163879082}
   speed: 5
   turnSmoothTime: 0.1
   turnSmoothVelocity: 0
   cam: {fileID: 963194228}
+  jumpForce: 4
 --- !u!1001 &205379205
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -832,7 +834,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 782706401}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.0000000046972763, y: 0.96201515, z: -0.27299613, w: 0.000000016552804}
+  m_LocalRotation: {x: -0.000000004697275, y: 0.96201515, z: -0.2729961, w: -0.000000016552798}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -926,7 +928,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.000000009993589, y: 0.9569043, z: -0.29040354, w: -0.00000003292972}
+  m_LocalRotation: {x: 0.000000009993589, y: 0.9569043, z: -0.29040354, w: 0.00000003292972}
   m_LocalPosition: {x: 173.36, y: 15.724, z: 193.95}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -997,7 +999,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 80
   m_CollisionDetection: 0
 --- !u!65 &976991070
 BoxCollider:
@@ -1711,7 +1713,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1981242504}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.000000004996794, y: 0.9569043, z: -0.29040354, w: -0.000000016464861}
+  m_LocalRotation: {x: 0.000000004996794, y: 0.9569043, z: -0.29040354, w: 0.000000016464861}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
