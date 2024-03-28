@@ -1,41 +1,40 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 
-public class ThirsPerson : MonoBehaviour
+public class ThirdPersonMovement : MonoBehaviour
 {
     [SerializeField] GameObject player;
     private Rigidbody playerRb;
     private Animator playerAnim;
-    [SerializeField] CharacterController controller;
-    [SerializeField] float speed = 6f;
-    [SerializeField] float turnSmoothTime = 0.1f;
-    [SerializeField] float turnSmoothVelocity;
+    [SerializeField] float speed;
     [SerializeField] Transform cam;
+    [SerializeField] float turnSmoothVelocity;
+    [SerializeField] float turnSmoothTime = 0.1f;
     [SerializeField] float jumpForce;
+    private bool isShift = false;
 
-
-    private void Start()
+    // Start is called before the first frame update
+    void Start()
     {
-        playerRb = player.GetComponent<Rigidbody>();
         playerAnim = player.GetComponent<Animator>();
+        playerRb = player.GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        SwitchModeRunWalk();
+        Attack();
         Move();
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            playerRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-        }
     }
 
     void Move()
     {
         float horizontal = Input.GetAxisRaw("HorizontalPlayer");
         float vertical = Input.GetAxisRaw("VerticalPlayer");
-        Vector3 direction = new Vector3(-horizontal, 0f, -vertical).normalized;
+        Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
 
         if (direction.magnitude >= 0.1f)
         {
@@ -44,12 +43,22 @@ public class ThirsPerson : MonoBehaviour
             transform.rotation = Quaternion.Euler(0f, angle, 0f);
 
             Vector3 moveDir = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
-            controller.Move(moveDir * speed * Time.deltaTime);
-            playerAnim.SetFloat("speed_w", 0.3f);
+
+            transform.position += moveDir.normalized * speed * Time.deltaTime;
+            if(!isShift) playerAnim.SetFloat("speed_w", 0.3f);
+            else playerAnim.SetFloat("speed_w", 0.7f);
         }
         else
         {
             playerAnim.SetFloat("speed_w", 0f);
         }
+    }
+    void SwitchModeRunWalk()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftShift)) isShift = !isShift;
+    }
+    void Attack()
+    {
+        if (Input.GetKeyDown(KeyCode.E)) playerAnim.SetBool("attack", true); 
     }
 }
