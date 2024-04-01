@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem.XR;
+using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 public class ThirdPersonMovement : MonoBehaviour
 {
@@ -9,17 +10,21 @@ public class ThirdPersonMovement : MonoBehaviour
     private Rigidbody playerRb;
     private Animator playerAnim;
     [SerializeField] float speed;
+    [SerializeField] float speedRun;
     [SerializeField] Transform cam;
     [SerializeField] float turnSmoothVelocity;
     [SerializeField] float turnSmoothTime = 0.1f;
     [SerializeField] float jumpForce;
+    [SerializeField] float speedClimb;
     private bool isShift = false;
+    private bool isOnGround = false;
+    private bool isOnLadder = false;
 
     // Start is called before the first frame update
     void Start()
     {
         playerAnim = player.GetComponent<Animator>();
-        playerRb = player.GetComponent<Rigidbody>();
+        playerRb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -27,10 +32,14 @@ public class ThirdPersonMovement : MonoBehaviour
     {
         SwitchModeRunWalk();
         Attack();
-        Move();
+        if (isOnGround) Jump();
+        if(isOnLadder) Climb();
+        if (isShift) Move(speedRun);
+        else Move(speed);
+
     }
 
-    void Move()
+    void Move(float speed)
     {
         float horizontal = Input.GetAxisRaw("HorizontalPlayer");
         float vertical = Input.GetAxisRaw("VerticalPlayer");
@@ -60,5 +69,39 @@ public class ThirdPersonMovement : MonoBehaviour
     void Attack()
     {
         if (Input.GetKeyDown(KeyCode.E)) playerAnim.SetBool("attack", true); 
+    }
+    void Jump()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && isOnGround)
+        {
+            isOnGround = false;
+            playerRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        }
+    }
+    void Climb()
+    {
+        if(Input.GetKey(KeyCode.Q) && isOnLadder) 
+        {
+            transform.Translate(Vector3.up * speedClimb * Time.deltaTime);
+        }
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isOnGround = true;
+        }else if (collision.gameObject.CompareTag("Ladder"))
+        {
+            isOnLadder = true;
+            playerRb.useGravity = false;
+        }
+    }
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ladder"))
+        {
+            isOnLadder = false;
+            playerRb.useGravity = true;
+        }
     }
 }
