@@ -34,16 +34,20 @@ public class ThirdPersonMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float verticalVelocity = playerRb.velocity.y;
-        IsPlayerJumping(verticalVelocity);
-        SwitchModeRunWalk();
-        Attack();
-        if (isOnGround) Jump();
-        if(isOnLadder) Climb();
-        if (isShift) Move(speedRun);
-        else Move(speed);
-        SetPlayerJumpAnimation();
-        FirstBuying();
+        if (!gameManager.IsGameOver)
+        {
+            float verticalVelocity = playerRb.velocity.y;
+            IsPlayerJumping(verticalVelocity);
+            SwitchModeRunWalk();
+            Attack();
+            if (isOnGround) Jump();
+            if (isOnLadder) Climb();
+            if (isShift) Move(speedRun);
+            else Move(speed);
+            SetPlayerJumpAnimation();
+            FirstBuying();
+        }
+        else playerAnim.SetBool("dead", true);
     }
 
     void Move(float speed)
@@ -89,9 +93,14 @@ public class ThirdPersonMovement : MonoBehaviour
     {
         if(Input.GetKey(KeyCode.Q) && isOnLadder) 
         {
-            if(gameManager.IsClimbEquip())
+            if (gameManager.IsClimbEquip())
+            {
                 transform.Translate(Vector3.up * speedClimb * Time.deltaTime);
-            else gameManager.DisplayClimbEquipMessage();
+            }
+            else
+            {
+                gameManager.DisplayClimbEquipMessage(); 
+            }
         }
     }
     void IsPlayerJumping(float verticalVelocity)
@@ -146,21 +155,14 @@ public class ThirdPersonMovement : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isOnGround = true;
-        }
-        else if (collision.gameObject.CompareTag("Ladder"))
+        }else if (collision.gameObject.CompareTag("Enemy"))
         {
-            isOnLadder = true;
-            playerRb.useGravity = false;
+            gameManager.SetPlayerHealth(-1);
         }
     }
     private void OnCollisionExit(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Ladder"))
-        {
-            isOnLadder = false;
-            isOnGround = false;
-            playerRb.useGravity = true;
-        }
+
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -168,12 +170,23 @@ public class ThirdPersonMovement : MonoBehaviour
         {
             gameManager.IsPlayerOnFirstHouse = true;
         }
+        else if (other.gameObject.CompareTag("Ladder"))
+        {
+            isOnLadder = true;
+            playerRb.useGravity = false;
+        }
     }
     private void OnTriggerExit(Collider other)
     {
         if (other.gameObject.CompareTag("FirstEquip"))
         {
             gameManager.IsPlayerOnFirstHouse = false;
+        }
+        else if (other.gameObject.CompareTag("Ladder"))
+        {
+            isOnLadder = false;
+            isOnGround = false;
+            playerRb.useGravity = true;
         }
     }
 }
