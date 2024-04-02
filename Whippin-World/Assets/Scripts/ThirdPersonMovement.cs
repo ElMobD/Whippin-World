@@ -6,6 +6,7 @@ using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
 public class ThirdPersonMovement : MonoBehaviour
 {
+    private GameManager gameManager;
     [SerializeField] GameObject player;
     private Rigidbody playerRb;
     private Animator playerAnim;
@@ -19,10 +20,13 @@ public class ThirdPersonMovement : MonoBehaviour
     private bool isShift = false;
     private bool isOnGround = false;
     private bool isOnLadder = false;
+    private bool isJumping;
+    private bool isFalling;
 
     // Start is called before the first frame update
     void Start()
     {
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         playerAnim = player.GetComponent<Animator>();
         playerRb = GetComponent<Rigidbody>();
     }
@@ -30,13 +34,16 @@ public class ThirdPersonMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        float verticalVelocity = playerRb.velocity.y;
+        IsPlayerJumping(verticalVelocity);
         SwitchModeRunWalk();
         Attack();
         if (isOnGround) Jump();
         if(isOnLadder) Climb();
         if (isShift) Move(speedRun);
         else Move(speed);
-
+        SetPlayerJumpAnimation();
+        FirstBuying();
     }
 
     void Move(float speed)
@@ -64,11 +71,11 @@ public class ThirdPersonMovement : MonoBehaviour
     }
     void SwitchModeRunWalk()
     {
-        if (Input.GetKeyDown(KeyCode.LeftShift)) isShift = !isShift;
+        if (Input.GetKeyDown(KeyCode.LeftShift) && isOnGround) isShift = !isShift;
     }
     void Attack()
     {
-        if (Input.GetKeyDown(KeyCode.E)) playerAnim.SetBool("attack", true); 
+        if (Input.GetKeyDown(KeyCode.E) && isOnGround) playerAnim.SetBool("attack", true); 
     }
     void Jump()
     {
@@ -82,7 +89,56 @@ public class ThirdPersonMovement : MonoBehaviour
     {
         if(Input.GetKey(KeyCode.Q) && isOnLadder) 
         {
-            transform.Translate(Vector3.up * speedClimb * Time.deltaTime);
+            if(gameManager.IsClimbEquip())
+                transform.Translate(Vector3.up * speedClimb * Time.deltaTime);
+            else gameManager.DisplayClimbEquipMessage();
+        }
+    }
+    void IsPlayerJumping(float verticalVelocity)
+    {
+        if (verticalVelocity > 0.1f)
+        {
+            isJumping = true;
+            isFalling = false;
+        }
+        else if (verticalVelocity < -0.1f)
+        {
+            isJumping = false;
+            isFalling = true;
+        }
+        else
+        {
+            isJumping = false;
+            isFalling = false;
+        }
+    }
+
+    void SetPlayerJumpAnimation()
+    {
+        if(isJumping)
+        {
+            playerAnim.SetTrigger("jump_trig");
+            playerAnim.SetBool("jump_b", true);
+            playerAnim.SetBool("grounded", false);
+        }
+        else if (isFalling)
+        {
+            playerAnim.SetBool("jump_b", false);
+            playerAnim.SetBool("grounded", false);
+        }
+
+        if(isOnGround) 
+        {
+            playerAnim.SetBool("jump_b", false);
+            playerAnim.SetBool("grounded", true);
+        }
+    }
+
+    public void FirstBuying()
+    {
+        if(Input.GetKeyDown(KeyCode.I) && gameManager.IsPlayerOnFirstHouse && isOnGround)
+        {
+            gameManager.HandleFirstBuyingMessage();
         }
     }
     private void OnCollisionEnter(Collision collision)
@@ -90,7 +146,8 @@ public class ThirdPersonMovement : MonoBehaviour
         if (collision.gameObject.CompareTag("Ground"))
         {
             isOnGround = true;
-        }else if (collision.gameObject.CompareTag("Ladder"))
+        }
+        else if (collision.gameObject.CompareTag("Ladder"))
         {
             isOnLadder = true;
             playerRb.useGravity = false;
@@ -101,7 +158,22 @@ public class ThirdPersonMovement : MonoBehaviour
         if (collision.gameObject.CompareTag("Ladder"))
         {
             isOnLadder = false;
+            isOnGround = false;
             playerRb.useGravity = true;
+        }
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("FirstEquip"))
+        {
+            gameManager.IsPlayerOnFirstHouse = true;
+        }
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.CompareTag("FirstEquip"))
+        {
+            gameManager.IsPlayerOnFirstHouse = false;
         }
     }
 }
