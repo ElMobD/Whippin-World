@@ -39,8 +39,8 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         if(!isGameOver) 
-        { 
-
+        {
+            playerMoneyText.text = "Money : " + playerMoney + " €";
         }
         if (playerHealth <= 0) { isGameOver = true; gameOverPanel.gameObject.SetActive(true);};
     }
@@ -64,6 +64,11 @@ public class GameManager : MonoBehaviour
     {
         get { return playerHealth;}
         set { }
+    }
+    public int PlayerMoney
+    {
+        get { return playerMoney; }
+        set { playerMoney = value; }
     }
     public bool IsGameOver
     {
@@ -91,7 +96,12 @@ public class GameManager : MonoBehaviour
     }
     public void BuyFirstItem()
     {
-
+        if( playerMoney >= firstBuyingPrice)
+        {
+            isPlayerHaveFirstEquipment = true;
+            playerMoney -= firstBuyingPrice;
+            CloseFirstBuyingMessage();
+        }
     }
     public void SetPlayerHealth(int a)
     {

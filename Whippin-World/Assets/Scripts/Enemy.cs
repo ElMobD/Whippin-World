@@ -5,6 +5,8 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     [SerializeField] GameObject player;
+    [SerializeField] GameObject playerDog;
+    private Animator playerAnim;
     [SerializeField] float movementSpeed = 5f;
     private Rigidbody enemyRb;
     private GameManager gameManager;
@@ -14,8 +16,9 @@ public class Enemy : MonoBehaviour
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         enemyRb = GetComponent<Rigidbody>();
+        playerAnim = playerDog.GetComponent<Animator>();
     }
-
+    
     // Update is called once per frame
     void Update()
     {
@@ -29,4 +32,17 @@ public class Enemy : MonoBehaviour
             }
         }
     }
+    void EnemyDie()
+    {
+        Destroy(gameObject);
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (playerAnim.GetBool("attack"))
+        {
+            EnemyDie();
+            gameManager.PlayerMoney += 10;
+        }
+    }
+
 }

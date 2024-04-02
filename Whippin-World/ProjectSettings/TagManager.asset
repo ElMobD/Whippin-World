@@ -8,6 +8,7 @@ TagManager:
   - Ladder
   - FirstEquip
   - Enemy
+  - PlayerWeapon
   layers:
   - Default
   - TransparentFX

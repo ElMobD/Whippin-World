@@ -6,10 +6,12 @@ public class StopAnimation : MonoBehaviour
 {
     private Rigidbody playerRb;
     private Animator playerAnim;
+    private GameManager gameManager;
 
     // Start is called before the first frame update
     void Start()
     {
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         playerAnim = GetComponent<Animator>();
         playerRb = GetComponent<Rigidbody>();
     }
@@ -19,9 +21,9 @@ public class StopAnimation : MonoBehaviour
     {
         
     }
-
     public void StopAttack()
     {
         playerAnim.SetBool("attack", false);
     }
+
 }
