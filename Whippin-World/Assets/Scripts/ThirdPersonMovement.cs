@@ -17,6 +17,11 @@ public class ThirdPersonMovement : MonoBehaviour
     [SerializeField] float turnSmoothTime = 0.1f;
     [SerializeField] float jumpForce;
     [SerializeField] float speedClimb;
+    [SerializeField] AudioClip jumpSound;
+    [SerializeField] AudioClip attackSound;
+    [SerializeField] AudioClip hitSound;
+    [SerializeField] AudioClip itemNeedingSound;
+    private AudioSource playerAudio;
     private bool isShift = false;
     private bool isOnGround = false;
     private bool isOnLadder = false;
@@ -29,6 +34,7 @@ public class ThirdPersonMovement : MonoBehaviour
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         playerAnim = player.GetComponent<Animator>();
         playerRb = GetComponent<Rigidbody>();
+        playerAudio = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -79,7 +85,10 @@ public class ThirdPersonMovement : MonoBehaviour
     }
     void Attack()
     {
-        if (Input.GetKeyDown(KeyCode.E) && isOnGround) playerAnim.SetBool("attack", true); 
+        if (Input.GetKeyDown(KeyCode.E) && isOnGround) { 
+            playerAnim.SetBool("attack", true); 
+            playerAudio.PlayOneShot(attackSound, 1.0f); 
+        }
     }
     void Jump()
     {
@@ -87,6 +96,7 @@ public class ThirdPersonMovement : MonoBehaviour
         {
             isOnGround = false;
             playerRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            playerAudio.PlayOneShot(jumpSound, 1.0f);
         }
     }
     void Climb()
@@ -99,7 +109,8 @@ public class ThirdPersonMovement : MonoBehaviour
             }
             else
             {
-                gameManager.DisplayClimbEquipMessage(); 
+                gameManager.DisplayClimbEquipMessage();
+                playerAudio.PlayOneShot(itemNeedingSound, 1.0f);
             }
         }
     }

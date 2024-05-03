@@ -23,6 +23,8 @@ public class GameManager : MonoBehaviour
     private int firstBuyingPrice = 50;
     private HealthBar healthBar;
     private bool isGameOver;
+    private AudioSource gameAudio;
+    [SerializeField] AudioClip buyingSound;
 
 
 
@@ -33,6 +35,7 @@ public class GameManager : MonoBehaviour
         healthBar = GameObject.Find("Health Bar").GetComponent<HealthBar>();
         playerMoneyText.text = "Money : " + playerMoney + " €";
         firstBuyingPriceText.text = "Prix : " + firstBuyingPrice + " €";
+        gameAudio = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -101,6 +104,7 @@ public class GameManager : MonoBehaviour
             isPlayerHaveFirstEquipment = true;
             playerMoney -= firstBuyingPrice;
             CloseFirstBuyingMessage();
+            gameAudio.PlayOneShot(buyingSound, 1.0f);
         }
     }
     public void SetPlayerHealth(int a)
