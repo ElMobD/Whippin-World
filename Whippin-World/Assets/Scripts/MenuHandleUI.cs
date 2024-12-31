@@ -11,15 +11,24 @@ public class MenuHandleUI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        GameObject managerObject = GameObject.Find("GameManager");
+        if (managerObject != null)
+        {
+            gameManager = managerObject.GetComponent<GameManager>();
+        }
+        else
+        {
+            Debug.LogError("GameManager not found in the scene.");
+        }
     }
+
 
     // Update is called once per frame
     void Update()
     {
-        if (!gameManager.IsGameOver)
+        /*if (!gameManager.IsGameOver)
         {
-        }
+        }*/
     }
 
     public void StartGame()
