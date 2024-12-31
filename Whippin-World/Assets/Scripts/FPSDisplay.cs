@@ -25,7 +25,6 @@ public class FPSDisplay : MonoBehaviour
         // Calculer les FPS
         float fps = 1.0f / deltaTime;
 
-        // Définir le style pour l'affichage
         GUIStyle style = new GUIStyle();
         style.fontSize = 20; // Taille de la police
         style.normal.textColor = Color.white; // Couleur du texte
