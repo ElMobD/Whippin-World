@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +14,7 @@ public class HealthBar : MonoBehaviour
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         slider.maxValue = gameManager.PlayerHealth;
         slider.value = gameManager.PlayerHealth;
+        Console.WriteLine("fdsdf");
     }
 
     // Update is called once per frame
